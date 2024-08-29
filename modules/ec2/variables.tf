@@ -24,3 +24,8 @@ variable "ec2_instance_name" {
   description = "The name of the EC2 instance"
   
 }
+
+variable "image_bucket_arn" {
+  type        = string
+  description = "The ARN of the S3 image bucket"
+}

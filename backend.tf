@@ -1,7 +1,6 @@
 # S3 bucket to store the terraform state file
 resource "aws_s3_bucket" "terrraform-backend" {
   bucket        = "facial-recognition-terraform-backend"
-  force_destroy = true
 }
 
 

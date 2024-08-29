@@ -6,6 +6,7 @@ sudo apt install -y python3-pip python3-venv libgl1
 
 git clone https://github.com/amit-cubit/facial_recognition_api.git
 cd facial_recognition_api
+mkdir images
 
 # sudo  cp fastapi_nginx /etc/nginx/sites-enabled/
 # sudo service nginx restart

@@ -14,6 +14,7 @@ module "ec2_instance" {
   key_name      = var.key_name
   file_path     = var.file_path
   ec2_instance_name = var.ec2_instance_name
+  image_bucket_arn = module.s3_bucket.image_s3_bucket_arn
 }
 
 module "s3_bucket" {
