@@ -18,3 +18,8 @@ output "image_s3_bucket_arn" {
   description = "The ARN of the S3 bucket" 
 }
 
+output "ecr_repository_url" {
+  value = module.ecr_repository.aws_ecr_repository_url
+  description = "The URL of the ECR repository"
+}
+

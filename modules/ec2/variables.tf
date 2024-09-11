@@ -29,3 +29,14 @@ variable "image_bucket_arn" {
   type        = string
   description = "The ARN of the S3 image bucket"
 }
+
+variable "ssm_account_id_arn" {
+  type        = string
+  description = "The ARN of the SSM account ID"
+  
+}
+
+variable "ssm_region_arn" {
+  type        = string
+  description = "The region of the SSM"
+}
