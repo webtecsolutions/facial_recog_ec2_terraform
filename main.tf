@@ -29,3 +29,17 @@ module "ssm" {
   aws_account_id = var.aws_account_id
   aws_region     = var.aws_region
 }
+
+module "opensearch" {
+  source = "./modules/opensearch"
+  opensearch_domain_name = var.opensearch_domain_name
+  opensearch_version = var.opensearch_version
+  opensearch_instance_count = var.opensearch_instance_count
+  opensearch_instance_type = var.opensearch_instance_type
+  multi_az_with_standby_enabled = var.multi_az_with_standby_enabled
+  opensearch_volume_size = var.opensearch_volume_size
+  opensearch_master_user_password = var.opensearch_master_user_password
+  opensearch_master_user_name = var.opensearch_master_user_name
+  aws_account_id = var.aws_account_id
+  aws_region = var.aws_region
+}

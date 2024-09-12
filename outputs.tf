@@ -23,3 +23,7 @@ output "ecr_repository_url" {
   description = "The URL of the ECR repository"
 }
 
+output "openseach_domain_dashboard" {
+  value = module.opensearch.opensearch_domain_dashboard
+}
+
