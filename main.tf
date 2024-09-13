@@ -17,6 +17,10 @@ module "ec2_instance" {
   image_bucket_arn = module.s3_bucket.image_s3_bucket_arn
   ssm_account_id_arn = module.ssm.ssm_account_id_arn
   ssm_region_arn = module.ssm.ssm_region_arn
+  opensearch_domain_endpoint_arn = module.ssm.opensearch_domain_endpoint_arn
+  opensearch_master_user_name_arn = module.ssm.opensearch_master_user_name_arn
+  opensearch_master_user_password_arn = module.ssm.opensearch_master_user_password_arn
+  ec2_instance_depends_on = module.ecr_repository.null_resource_id
 }
 
 module "s3_bucket" {

@@ -139,7 +139,7 @@ resource "aws_iam_policy" "facial_recognition_ec2_ssm_policy" {
           "ssm:GetParameter",
           "ssm:GetParametersByPath"
         ],
-        Resource = ["${var.ssm_account_id_arn}", "${var.ssm_region_arn}"]
+        Resource = ["${var.ssm_account_id_arn}", "${var.ssm_region_arn}", "${var.opensearch_domain_endpoint_arn}", "${var.opensearch_master_user_name_arn}", "${var.opensearch_master_user_password_arn}"]
       }
     ]
   })
@@ -168,5 +168,6 @@ resource "aws_instance" "facial_recognition_ec2" {
   tags = {
     Name = var.ec2_instance_name
   }
+  depends_on = [ var.ec2_instance_depends_on ]
 }
 
