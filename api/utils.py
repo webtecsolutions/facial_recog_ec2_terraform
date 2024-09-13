@@ -39,6 +39,19 @@ def delete_new_images(image_dict):
         delete_local_file(img_path)
     return
 
+def anti_spoofing_user_image(image_path):
+    try:
+        embedding_objs = DeepFace.extract_faces(
+            img_path = image_path,
+            anti_spoofing = True
+        )
+        for embedding_obj in embedding_objs:
+            if embedding_obj['is_real'] == False:
+                return False
+        return True
+    except Exception as e:
+        print(f"Error performing anti-spoofing check: {e}")
+        return None
 
 def prepare_image(image_dict):
     embedded_docs = []

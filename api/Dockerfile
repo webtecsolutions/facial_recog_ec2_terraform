@@ -16,7 +16,7 @@ RUN pip install deepface
 RUN pip install tf-keras
 RUN pip install fastapi
 RUN pip install uvicorn
-RUN pip install torch
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 RUN pip install opensearch-py
 
 # Copy the current directory contents into the container at /app

@@ -14,7 +14,8 @@ from utils import (
     delete_new_images,
     prepare_data_for_indexing,
     get_query_vector,
-    parse_search_result
+    parse_search_result,
+    anti_spoofing_user_image
 )
 from opensearch_service import (
     create_opensearch_client,
@@ -79,26 +80,38 @@ async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
 
     check_and_create_dir("images")
 
+    img1_path = "images/" + "img1.jpg"
+    download_from_url(img1_key, img1_path)
+
+    anti_spoofing_result = anti_spoofing_user_image(img1_path)
+    if anti_spoofing_result is None:
+        delete_local_file(img1_path)
+        return {"message": "No faces detected in User Image"}
+    elif anti_spoofing_result == False:
+        delete_local_file(img1_path)
+        return {"message": "User Image is a spoof image"}
+    else:
+        print("User Image is a real image")
+
     new_image_keys = check_images_exist(client, index_name, group_image_keys)
     new_image_paths = {}
     if new_image_keys is not None:  
         new_image_paths = download_new_images(new_image_keys)
         docs = prepare_image(new_image_paths)
         if isinstance(docs, str):
+            delete_local_file(img1_path)
             delete_new_images(new_image_paths)
             return {"message": f"Error preparing image {docs}. No face found in the image"}
         index_docs = prepare_data_for_indexing(docs, index_name)
         response = index_data(client, index_docs)
         print(response) 
 
-    img1_path = "images/" + "img1.jpg"
-    download_from_url(img1_key, img1_path)
 
     query_embedding = get_query_vector(img1_path)
     if query_embedding is None:
         delete_local_file(img1_path)
         delete_new_images(new_image_paths)
-        return {"message": "No face found in the query image"}
+        return {"message": "No faces detected in the User image"}
     
     search_result = search_knn_index(client, index_name, query_embedding, group_image_keys)
     print(search_result)
@@ -107,8 +120,8 @@ async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
 
     result = parse_search_result(search_result)
     if result is None:
-        return {"message": "No match found"}
-    return {"message": f"{result} is the same person as img1"}
+        return {"message": "User not Recognized. No match found"}
+    return {"message": f"{result} is the same person as User {img1_key}"}
 
 
 if __name__ == "__main__":
