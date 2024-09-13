@@ -28,6 +28,9 @@ module "ssm" {
   source        = "./modules/ssm"
   aws_account_id = var.aws_account_id
   aws_region     = var.aws_region
+  opensearch_master_user_password = var.opensearch_master_user_password
+  opensearch_master_user_name = var.opensearch_master_user_name
+  opensearch_domain_endpoint = module.opensearch.opensearch_domain_endpoint
 }
 
 module "opensearch" {

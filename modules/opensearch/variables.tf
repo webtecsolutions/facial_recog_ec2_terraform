@@ -47,9 +47,11 @@ variable "opensearch_master_user_name" {
 variable "aws_account_id" {
   description = "The AWS account ID"
   type        = string
+  sensitive = true
 }
 
 variable "aws_region" {
   description = "The AWS region"
   type        = string
+  sensitive = true
 }
