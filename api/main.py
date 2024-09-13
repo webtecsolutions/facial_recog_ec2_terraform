@@ -97,6 +97,7 @@ async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
     query_embedding = get_query_vector(img1_path)
     if query_embedding is None:
         delete_local_file(img1_path)
+        delete_new_images(new_image_paths)
         return {"message": "No face found in the query image"}
     
     search_result = search_knn_index(client, index_name, query_embedding, group_image_keys)
