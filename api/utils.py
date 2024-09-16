@@ -13,10 +13,13 @@ def download_from_url(url, download_path):
         if response.status_code == 200:
             with open(download_path, 'wb') as f:
                 f.write(response.content)
+            return {"status": "success", "path": download_path}
         else:
             print(f"Failed to download image from {url}. Status code: {response.status_code}")
+            return {"status": "failure", "path": None}   
     except Exception as e:
         print(f"Error downloading image from {url}: {e}")
+        return {"status": "failure", "path": None}  
 
 
 def delete_local_file(file_path):
@@ -30,9 +33,11 @@ def download_new_images(image_list):
     new_image_paths = {}
     for i, img_key in enumerate(image_list):
         img_path = "images/" + f"img{i+2}.jpg"
-        download_from_url(img_key, img_path)
+        result = download_from_url(img_key, img_path)
+        if result["status"] == "failure":
+            return {"status": "failure", "new_image_paths": new_image_paths}
         new_image_paths[img_key] = img_path
-    return new_image_paths
+    return {"status": "success", "new_image_paths": new_image_paths}
 
 def delete_new_images(image_dict):
     for img_key, img_path in image_dict.items():
