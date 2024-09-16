@@ -26,6 +26,7 @@ knn_index = {
 }
 
 def create_opensearch_client():
+    """Create an OpenSearch client."""
     # Access environment variables
     OPENSEARCH_USERNAME = os.getenv("OPENSEARCH_USERNAME")
     OPENSEARCH_PASSWORD = os.getenv("OPENSEARCH_PASSWORD")
@@ -49,6 +50,7 @@ def create_opensearch_client():
     return client
 
 def create_knn_index(client, index_name):
+    """Create a k-NN index in OpenSearch."""
     #Chweck if the index exists
     if client.indices.exists(index=index_name):
         print("Index already exists")
@@ -61,16 +63,19 @@ def create_knn_index(client, index_name):
     return response
 
 def index_data(client, docs):
+    """Index data in OpenSearch."""
     # Index the data
     response = helpers.bulk(client, docs)
     return response
 
 def delete_index(client, index_name):
+    """Delete an index in OpenSearch."""
     # Delete the index
     response = client.indices.delete(index=index_name)
     return response
 
 def search_knn_index(client, index_name, query_embedding, query_image_list):
+    """Search the k-NN index in OpenSearch for Best Match."""
     search_query={
     "size": 3,
     "query": {
@@ -93,6 +98,7 @@ def search_knn_index(client, index_name, query_embedding, query_image_list):
     return result
 
 def check_images_exist(client, index_name, image_list):
+    """Check if images are already indexed"""
     search_query={
         "size": 0,
         "aggs":{

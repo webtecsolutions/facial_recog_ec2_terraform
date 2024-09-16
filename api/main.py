@@ -29,6 +29,8 @@ client = create_opensearch_client()
 index_name = "facial-recog-index"
 create_knn_index(client, index_name)
 
+model_name = "SFace"
+
 app = FastAPI()
 
 @app.post("/verify")
@@ -44,45 +46,14 @@ async def verify_faces(image_paths: ImagePaths) -> Dict[str, str]:
     check_and_create_dir("images")
 
     # Download images from url
-    download_from_url(img1_key, img1_path)
-    download_from_url(img2_key, img2_path)
-
-    try:
-        # Perform face verification using the provided image paths
-        result = DeepFace.verify(
-            img1_path=img1_path,
-            img2_path=img2_path,
-            model_name="SFace"
-
-        )
-        print("Same person",flush=True) if result["verified"] else print("Different persons", flush=True)
-        # Delete the local files after the verification is done
-        delete_local_file(img1_path)
-        delete_local_file(img2_path)
-        # Return the result as a JSON response
-        if result["verified"]:
-            return {"message": "Both are the same person", "verified" : "True"}
-        else:
-            return {"message": "Both are different persons","verified" : "False"}
-    except Exception as e:
-        print(e)
-        delete_local_file(img1_path)
-        delete_local_file(img2_path)
-        return {"message": "No Face Found "  + str(e), "verified" : "False"}
-    
-@app.post("/group_verify")
-async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
-    
-    img1_key = image_paths.img1_path
-    group_image_keys = image_paths.group_image_paths
-
-    check_and_create_dir("images")
-
-    img1_path = "images/" + "img1.jpg"
     download_result = download_from_url(img1_key, img1_path)
     if download_result["status"] == "failure":
         return {"message": "Error downloading User Image. Invalid Link.", "verified" : "False"}
-
+    download_result = download_from_url(img2_key, img2_path)
+    if download_result["status"] == "failure":
+        return {"message": "Error downloading Reference Image. Invalid Link.", "verified" : "False"}
+    
+    # Perform anti-spoofing check on the user image
     anti_spoofing_result = anti_spoofing_user_image(img1_path)
     if anti_spoofing_result is None:
         delete_local_file(img1_path)
@@ -93,6 +64,55 @@ async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
     else:
         print("User Image is a real image")
 
+    try:
+        # Perform face verification using the provided image paths
+        result = DeepFace.verify(
+            img1_path=img1_path,
+            img2_path=img2_path,
+            model_name=model_name
+
+        )
+        print("Same person",flush=True) if result["verified"] else print("Different persons", flush=True)
+        # Delete the local files after the verification is done
+        delete_local_file(img1_path)
+        delete_local_file(img2_path)
+        # Return the result as a JSON response
+        if result["verified"]:
+            return {"message": "User Recognised.", "verified" : "True"}
+        else:
+            return {"message": "User Not Recognized","verified" : "False"}
+    except Exception as e:
+        print(e)
+        delete_local_file(img1_path)
+        delete_local_file(img2_path)
+        return {"message": "No faces detected in User Image"  + str(e), "verified" : "False"}
+    
+@app.post("/group_verify")
+async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
+    
+    img1_key = image_paths.img1_path
+    group_image_keys = image_paths.group_image_paths
+
+    check_and_create_dir("images")
+
+    # Download User image from url
+    img1_path = "images/" + "img1.jpg"
+    download_result = download_from_url(img1_key, img1_path)
+    if download_result["status"] == "failure":
+        return {"message": "Error downloading User Image. Invalid Link.", "verified" : "False"}
+
+    # Perform anti-spoofing check on the user image
+    anti_spoofing_result = anti_spoofing_user_image(img1_path)
+    if anti_spoofing_result is None:
+        delete_local_file(img1_path)
+        return {"message": "No faces detected in User Image", "verified" : "False"}
+    elif anti_spoofing_result == False:
+        delete_local_file(img1_path)
+        return {"message": "User Image is a spoof image", "verified" : "False"}
+    else:
+        print("User Image is a real image")
+
+    # Download Group images from url
     new_image_keys = check_images_exist(client, index_name, group_image_keys)
     new_image_paths = {}
     if new_image_keys is not None:  
@@ -101,7 +121,7 @@ async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
         if download_result["status"] == "failure":
             delete_new_images(new_image_paths)
             return {"message": "Error downloading Group Images. Invalid Link.", "verified" : "False"}
-        docs = prepare_image(new_image_paths)
+        docs = prepare_image(model_name, new_image_paths)
         if isinstance(docs, str):
             delete_local_file(img1_path)
             delete_new_images(new_image_paths)
@@ -110,8 +130,8 @@ async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
         response = index_data(client, index_docs)
         print(response) 
 
-
-    query_embedding = get_query_vector(img1_path)
+    # Get the query vector for the user image
+    query_embedding = get_query_vector(model_name, img1_path)
     if query_embedding is None:
         delete_local_file(img1_path)
         delete_new_images(new_image_paths)
@@ -122,10 +142,11 @@ async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
     delete_local_file(img1_path)
     delete_new_images(new_image_paths)
 
+    # Parse the search result and return the response
     result = parse_search_result(search_result)
     if result is None:
-        return {"message": "User not Recognized. No match found", "verified" : "False"}
-    return {"message": f"User Recognized. Match found", "match_image": f"{result}", "verified" : "True"}
+        return {"message": "User Not Recognized. No match found", "verified" : "False"}
+    return {"message": f"User Recognized. Match found", "match_image": result[0], "verified" : "True"}
 
 
 if __name__ == "__main__":

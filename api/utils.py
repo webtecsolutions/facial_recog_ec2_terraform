@@ -3,11 +3,13 @@ import requests
 from deepface import DeepFace
 
 def check_and_create_dir(dir_path):
+    """Check if a directory exists and create it if it doesn't."""
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
         print(f"Directory created: {dir_path}")
 
 def download_from_url(url, download_path):
+    """Download an image from a URL."""
     try:
         response = requests.get(url)
         if response.status_code == 200:
@@ -23,6 +25,7 @@ def download_from_url(url, download_path):
 
 
 def delete_local_file(file_path):
+    """Delete a file from the local"""
     try:
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -30,6 +33,7 @@ def delete_local_file(file_path):
         print(f"Error deleting file {file_path}: {e}")
 
 def download_new_images(image_list):
+    """Download new images from a list of URLs."""
     new_image_paths = {}
     for i, img_key in enumerate(image_list):
         img_path = "images/" + f"img{i+2}.jpg"
@@ -40,11 +44,13 @@ def download_new_images(image_list):
     return {"status": "success", "new_image_paths": new_image_paths}
 
 def delete_new_images(image_dict):
+    """Delete new images from the local."""
     for img_key, img_path in image_dict.items():
         delete_local_file(img_path)
     return
 
 def anti_spoofing_user_image(image_path):
+    """Perform anti-spoofing check on the user image."""
     try:
         embedding_objs = DeepFace.extract_faces(
             img_path = image_path,
@@ -58,13 +64,14 @@ def anti_spoofing_user_image(image_path):
         print(f"Error performing anti-spoofing check: {e}")
         return None
 
-def prepare_image(image_dict):
+def prepare_image(model_name, image_dict):
+    """Prepare images for indexing."""
     embedded_docs = []
     for image_key, image_path in image_dict.items():
         try:
             embedding_objs = DeepFace.represent(
                 img_path = image_path,
-                model_name='SFace'
+                model_name=model_name
             )
             embedding = embedding_objs[0]['embedding']
             doc = {
@@ -79,15 +86,17 @@ def prepare_image(image_dict):
     return embedded_docs
 
 def prepare_data_for_indexing(docs, index):
+    """Prepare data for indexing in OpenSearch."""
     for i in range(len(docs)):
         docs[i]["_index"] = index
     return docs
 
-def get_query_vector(image_path):
+def get_query_vector(model_name, image_path):
+    """Get the query vector for the user image."""
     try:
         embedding_objs = DeepFace.represent(
             img_path = image_path,
-            model_name='SFace'
+            model_name=model_name
         )
         embedding = embedding_objs[0]['embedding']
         return embedding
@@ -97,6 +106,7 @@ def get_query_vector(image_path):
         return None
     
 def parse_search_result(result):
+    """Parse the search result and return the response."""
     hits = result['hits']['hits']
     if hits[0]['_score'] > 0.65:
         return hits[0]['fields']['unique_url']
