@@ -2,3 +2,5 @@ deepface
 tf-keras
 fastapi
 uvicorn
+torch
+opensearch-py
