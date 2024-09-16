@@ -2,8 +2,6 @@ from fastapi import FastAPI
 from deepface import DeepFace
 from typing import Dict
 
-import os
-
 from models import ImagePaths, GroupImagePaths
 from utils import (
     check_and_create_dir,
@@ -127,7 +125,7 @@ async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
     result = parse_search_result(search_result)
     if result is None:
         return {"message": "User not Recognized. No match found", "verified" : "False"}
-    return {"message": f"User Recognized. Match found", "match_image": result, "verified" : "True"}
+    return {"message": f"User Recognized. Match found", "match_image": f"{result}", "verified" : "True"}
 
 
 if __name__ == "__main__":

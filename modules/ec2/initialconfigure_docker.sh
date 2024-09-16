@@ -35,3 +35,4 @@ sudo aws ecr get-login-password --region $AWS_REGION | docker login --username A
 docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/facial-recognition-repository:latest
 docker run -d -p 8000:8000 -e OPENSEARCH_PASSWORD=$OPENSEARCH_PASSWORD -e OPENSEARCH_USERNAME=$OPENSEARCH_USERNAME -e OPENSEARCH_HOST=$OPENSEARCH_HOST ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/facial-recognition-repository:latest
 
+# cat /var/log/cloud-init-output.log
