@@ -23,7 +23,7 @@ from chromadb_service import (
 )
 
 model_name = "SFace"
-chromadb_path = "/var/cubit/chromadb"
+chromadb_path = "/data/chromadb"
 
 # Create an ChromaDB client
 client = create_chroma_client(path= chromadb_path)
