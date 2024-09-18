@@ -34,7 +34,8 @@ module "ssm" {
   aws_region     = var.aws_region
   opensearch_master_user_password = var.opensearch_master_user_password
   opensearch_master_user_name = var.opensearch_master_user_name
-  opensearch_domain_endpoint = try(module.opensearch.opensearch_domain_endpoint,"")
+  # dummy value is used to prevent creationn of ssm every time
+  opensearch_domain_endpoint = length(try(module.opensearch.opensearch_domain_endpoint, [])) > 0 ? module.opensearch.opensearch_domain_endpoint : "dummy/domain/endpoint"
 }
 
 module "opensearch" {
