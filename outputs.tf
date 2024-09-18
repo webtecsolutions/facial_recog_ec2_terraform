@@ -24,6 +24,6 @@ output "ecr_repository_url" {
 }
 
 output "opensearch_domain_endpoint" {
-  value = module.opensearch.opensearch_domain_endpoint
+  value = try(module.opensearch.opensearch_domain_endpoint,null)
 }
 

@@ -34,11 +34,13 @@ module "ssm" {
   aws_region     = var.aws_region
   opensearch_master_user_password = var.opensearch_master_user_password
   opensearch_master_user_name = var.opensearch_master_user_name
-  opensearch_domain_endpoint = module.opensearch.opensearch_domain_endpoint
+  opensearch_domain_endpoint = try(module.opensearch.opensearch_domain_endpoint,"")
 }
 
 module "opensearch" {
   source = "./modules/opensearch"
+  count = 0
+
   opensearch_domain_name = var.opensearch_domain_name
   opensearch_version = var.opensearch_version
   opensearch_instance_count = var.opensearch_instance_count
