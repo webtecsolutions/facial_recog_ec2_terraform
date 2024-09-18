@@ -157,6 +157,7 @@ resource "aws_iam_instance_profile" "ec2_instance_profile" {
 
 resource "aws_instance" "facial_recognition_ec2" {
   ami           = var.ami_id
+  availability_zone = var.aws_availability_zone
   instance_type = var.instance_type
   key_name      = aws_key_pair.rsa-4096-ec2.key_name
   security_groups = [aws_security_group.facial_recognition_ec2_sg.name]

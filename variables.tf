@@ -109,3 +109,19 @@ variable "opensearch_master_user_name" {
   type        = string
   sensitive   = true
 }
+
+variable "ebs_device_name" {
+  description = "The device name to attach the EBS volume to"
+  type        = string
+}
+
+variable "ebs_volume_size" {
+  description = "The size of the EBS volume"
+  type        = number
+}
+
+variable "aws_availability_zone" {
+  description = "The AWS availability zone to deploy the EC2 instance in"
+  type        = string
+  
+}

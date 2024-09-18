@@ -21,6 +21,15 @@ module "ec2_instance" {
   opensearch_master_user_name_arn = module.ssm.opensearch_master_user_name_arn
   opensearch_master_user_password_arn = module.ssm.opensearch_master_user_password_arn
   ec2_instance_depends_on = module.ecr_repository.null_resource_id
+  aws_availability_zone = var.aws_availability_zone
+}
+
+module "ebs_volume" {
+  source = "./modules/ebs"
+  ec2_instance_id = module.ec2_instance.ec2_instance_id
+  aws_availability_zone = var.aws_availability_zone
+  ebs_device_name = var.ebs_device_name
+  ebs_volume_size = var.ebs_volume_size
 }
 
 module "s3_bucket" {
@@ -53,3 +62,4 @@ module "opensearch" {
   aws_account_id = var.aws_account_id
   aws_region = var.aws_region
 }
+

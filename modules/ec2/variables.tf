@@ -64,3 +64,8 @@ variable "ec2_instance_depends_on" {
   description = "The dependency of the EC2 instance"
   
 }
+
+variable "aws_availability_zone" {
+  type        = string
+  description = "The availability zone of the EBS volume"
+}
