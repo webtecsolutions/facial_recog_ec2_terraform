@@ -17,7 +17,7 @@ RUN pip install tf-keras
 RUN pip install fastapi
 RUN pip install uvicorn
 RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-RUN pip install opensearch-py
+RUN pip install chromadb
 
 # Copy the current directory contents into the container at /app
 COPY *.py /app

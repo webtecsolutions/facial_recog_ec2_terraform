@@ -10,26 +10,26 @@ from utils import (
     download_new_images,
     prepare_image,
     delete_new_images,
-    prepare_data_for_indexing,
     get_query_vector,
     parse_search_result,
     anti_spoofing_user_image
 )
-from opensearch_service import (
-    create_opensearch_client,
-    create_knn_index,
+from chromadb_service import (
+    create_chroma_client,
+    create_collection,
     index_data,
     search_knn_index,
-    check_images_exist,
+    check_images_exist
 )
 
-# Create an OpenSearch client
-client = create_opensearch_client()
-# Create an index in OpenSearch for the face verification
-index_name = "facial-recog-index"
-create_knn_index(client, index_name)
-
 model_name = "SFace"
+chromadb_path = "/var/cubit/chromadb"
+
+# Create an ChromaDB client
+client = create_chroma_client(path= chromadb_path)
+# Create an index in ChromaDB for the face verification
+collection_name = "facial-recog-index"
+collection = create_collection(client, collection_name)
 
 app = FastAPI()
 
@@ -113,7 +113,7 @@ async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
         print("User Image is a real image")
 
     # Download Group images from url
-    new_image_keys = check_images_exist(client, index_name, group_image_keys)
+    new_image_keys = check_images_exist(collection, group_image_keys)
     new_image_paths = {}
     if new_image_keys is not None:  
         download_result = download_new_images(new_image_keys)
@@ -126,8 +126,8 @@ async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
             delete_local_file(img1_path)
             delete_new_images(new_image_paths)
             return {"message": "Error Indexing image. No face found in the image", "error_image":f"{docs}","verified" : "False"}
-        index_docs = prepare_data_for_indexing(docs, index_name)
-        response = index_data(client, index_docs)
+        # index_docs = prepare_data_for_indexing(docs, collection_name)
+        response = index_data(collection, docs)
         print(response) 
 
     # Get the query vector for the user image
@@ -137,16 +137,17 @@ async def group_verify_faces(image_paths: GroupImagePaths) -> Dict[str, str]:
         delete_new_images(new_image_paths)
         return {"message": "No faces detected in the User image", "verified" : "False"}
     
-    search_result = search_knn_index(client, index_name, query_embedding, group_image_keys)
+    search_result = search_knn_index(collection, query_embedding, group_image_keys)
     print(search_result)
     delete_local_file(img1_path)
     delete_new_images(new_image_paths)
 
     # Parse the search result and return the response
     result = parse_search_result(search_result)
+    match_image = result
     if result is None:
         return {"message": "User Not Recognized. No match found", "verified" : "False"}
-    return {"message": f"User Recognized. Match found", "match_image": result[0], "verified" : "True"}
+    return {"message": f"User Recognized. Match found", "match_image": match_image, "verified" : "True"}
 
 
 if __name__ == "__main__":

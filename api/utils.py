@@ -77,7 +77,7 @@ def prepare_image(model_name, image_dict):
             doc = {
                 'embedding': embedding,
                 'unique_url': image_key,
-                '_id': image_key,
+                'id': image_key,
             }
             embedded_docs.append(doc)
         except Exception as e:
@@ -107,8 +107,8 @@ def get_query_vector(model_name, image_path):
     
 def parse_search_result(result):
     """Parse the search result and return the response."""
-    hits = result['hits']['hits']
-    if hits[0]['_score'] > 0.65:
-        return hits[0]['fields']['unique_url']
+    hits = result["distances"][0][0]
+    if hits < 0.65:
+        return result["ids"][0][0]
     else:
         return None
