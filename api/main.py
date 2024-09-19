@@ -21,6 +21,7 @@ from chromadb_service import (
     search_knn_index,
     check_images_exist
 )
+from middleware import DomainFilterMiddleware
 
 model_name = "SFace"
 chromadb_path = "/data/chromadb"
@@ -32,6 +33,9 @@ collection_name = "facial-recog-index"
 collection = create_collection(client, collection_name)
 
 app = FastAPI()
+
+# Add the custom middleware to the FastAPI app
+app.add_middleware(DomainFilterMiddleware)
 
 @app.post("/verify", response_model=ImageComparisonResult)
 async def verify_faces(image_paths: ImagePaths):
