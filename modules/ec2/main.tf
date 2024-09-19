@@ -164,7 +164,7 @@ resource "aws_instance" "facial_recognition_ec2" {
   root_block_device {
     volume_size = 20
   }
-  user_data = filebase64("${path.module}/initialconfigure_docker.sh")
+  user_data = filebase64("${path.module}/user_data_mime.txt")
   iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
   tags = {
     Name = var.ec2_instance_name
