@@ -18,4 +18,4 @@ class ImageVerificationResult(BaseModel):
     message: str
     verified: bool
     match_image: Optional[str] = None   # For cases where a match is found
-    error_image: Optional[str] = None   # For cases where an error occurred during indexing
+    # error_image: Optional[str] = None   # For cases where an error occurred during indexing

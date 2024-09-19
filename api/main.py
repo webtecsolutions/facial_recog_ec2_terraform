@@ -57,9 +57,11 @@ async def verify_faces(image_paths: ImagePaths):
     anti_spoofing_result = anti_spoofing_user_image(img1_path)
     if anti_spoofing_result is None:
         delete_local_file(img1_path)
+        delete_local_file(img2_path)
         return {"message": "No faces detected in User Image", "verified" : False}
     elif anti_spoofing_result == False:
         delete_local_file(img1_path)
+        delete_local_file(img2_path)
         return {"message": "User Image is a spoof image", "verified" : False}
     else:
         print("User Image is a real image")
@@ -122,10 +124,10 @@ async def group_verify_faces(image_paths: GroupImagePaths):
             delete_new_images(new_image_paths)
             return {"message": "Error downloading Group Images. Invalid Link.", "verified" : False}
         docs = prepare_image(model_name, new_image_paths)
-        if isinstance(docs, str):
-            delete_local_file(img1_path)
-            delete_new_images(new_image_paths)
-            return {"message": "Error Indexing image. No face found in the image", "error_image":f"{docs}","verified" : False}
+        # if isinstance(docs, str):
+        #     delete_local_file(img1_path)
+        #     delete_new_images(new_image_paths)
+        #     return {"message": "Error Indexing image. No face found in the image", "error_image":f"{docs}","verified" : False}
         # index_docs = prepare_data_for_indexing(docs, collection_name)
         response = index_data(collection, docs)
         print(response) 

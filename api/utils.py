@@ -68,21 +68,27 @@ def prepare_image(model_name, image_dict):
     """Prepare images for indexing."""
     embedded_docs = []
     for image_key, image_path in image_dict.items():
+        embedding_objs = []
         try:
             embedding_objs = DeepFace.represent(
                 img_path = image_path,
                 model_name=model_name
             )
-            embedding = embedding_objs[0]['embedding']
-            doc = {
-                'embedding': embedding,
-                'unique_url': image_key,
-                'id': image_key,
-            }
-            embedded_docs.append(doc)
         except Exception as e:
             print(f"Error preparing image {image_key}: {e}")
-            return image_key
+            # return image_key
+            embedding_objs = DeepFace.represent(
+                img_path = image_path,
+                model_name=model_name,
+                enforce_detection=False
+            )
+        embedding = embedding_objs[0]['embedding']
+        doc = {
+            'embedding': embedding,
+            'unique_url': image_key,
+            'id': image_key,
+        }
+        embedded_docs.append(doc)
     return embedded_docs
 
 def prepare_data_for_indexing(docs, index):
