@@ -144,7 +144,7 @@ async def group_verify_faces(image_paths: GroupImagePaths):
         return {"message": "No faces detected in the User image", "verified" : False}
     
     search_result = search_knn_index(collection, query_embedding, group_image_keys)
-    print(search_result)
+    # print(search_result)
     delete_local_file(img1_path)
     delete_new_images(new_image_paths)
 

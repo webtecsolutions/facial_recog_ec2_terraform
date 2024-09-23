@@ -114,6 +114,8 @@ def get_query_vector(model_name, image_path):
 def parse_search_result(result):
     """Parse the search result and return the response."""
     hits = result["distances"][0][0]
+    print(hits)
+    print(result["ids"][0][0])
     if hits < 0.35:
         return result["ids"][0][0]
     else:

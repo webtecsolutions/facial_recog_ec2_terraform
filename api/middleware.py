@@ -9,7 +9,6 @@ class DomainFilterMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Get the Host header
         host = request.headers.get("host")
-        print(request.headers)
         
         # Check if host is null, check if the host ends with any of the allowed domains
         if host and any(host.endswith(domain) for domain in ALLOWED_DOMAINS):
