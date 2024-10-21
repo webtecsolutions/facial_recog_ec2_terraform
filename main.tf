@@ -30,6 +30,7 @@ module "ebs_volume" {
   aws_availability_zone = var.aws_availability_zone
   ebs_device_name = var.ebs_device_name
   ebs_volume_size = var.ebs_volume_size
+  ebs_snapshot_id = var.ebs_snapshot_id
 }
 
 module "s3_bucket" {

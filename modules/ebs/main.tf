@@ -1,6 +1,7 @@
 resource "aws_ebs_volume" "facial_recognition_ebs_volume" {
   availability_zone = var.aws_availability_zone
   size              = var.ebs_volume_size
+  snapshot_id = var.ebs_snapshot_id
   tags = {
     Name = "facial-recognition-ebs-volume",
     Snapshot = "true"

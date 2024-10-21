@@ -17,3 +17,8 @@ variable "ebs_volume_size" {
   description = "The size of the EBS volume"
   type        = number
 }
+
+variable "ebs_snapshot_id" {
+  description = "The ID of the EBS snapshot to restore the volume from"
+  type        = string
+}

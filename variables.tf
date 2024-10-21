@@ -150,3 +150,8 @@ variable "dlm_times" {
     description = "Time to take the snapshot"
     type        = string
 }
+
+variable "ebs_snapshot_id" {
+    description = "ID of the EBS snapshot"
+    type        = string
+}
