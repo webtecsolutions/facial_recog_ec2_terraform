@@ -63,3 +63,12 @@ module "opensearch" {
   aws_region = var.aws_region
 }
 
+module "dlm" {
+  source = "./modules/dlm"
+  dlm_schedule_name = var.dlm_schedule_name
+  dlm_interval = var.dlm_interval
+  dlm_interval_unit = var.dlm_interval_unit
+  dlm_times = var.dlm_times
+  dlm_retain_rule_count = var.dlm_retain_rule_count
+}
+
