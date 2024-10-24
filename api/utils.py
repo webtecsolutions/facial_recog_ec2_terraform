@@ -116,7 +116,7 @@ def parse_search_result(result):
     hits = result["distances"][0][0]
     print(hits)
     print(result["ids"][0][0])
-    if hits < 0.35:
+    if hits < 0.4:
         return result["ids"][0][0]
     else:
         return None
